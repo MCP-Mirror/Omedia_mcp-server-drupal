@@ -33,7 +33,7 @@ jobs:
       - run: |
           for target in $(echo $TARGET_LIST | tr "," "\n")
           do
-            binary_name=$(echo $target | sed "s/^bun-/$PACKAGE_NAME-${{ steps.package-version.outputs.current-version}}/" | sed "s/-/_/g")
+            binary_name=$(echo $target | sed "s/^bun-/$PACKAGE_NAME-${{ steps.package-version.outputs.current-version}}-/" | sed "s/-/_/g")
             bun build --compile --target=$target --minify --sourcemap --bytecode ./src/index.ts --outfile ./build/$binary_name
           done
       - name: Release
