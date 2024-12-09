@@ -1,0 +1,27 @@
+{
+	"name": "mcp-server-drupal",
+	"version": "0.0.1",
+	"description": "A Model Context Protocol server",
+	"private": true,
+	"type": "module",
+	"bin": {
+		"mcp-server-drupal": "./build/mcp-server-drupal"
+	},
+	"files": ["build"],
+	"scripts": {
+		"build": "bun build --compile --minify --sourcemap --bytecode ./src/index.ts --outfile ./build/mcp-server-drupal",
+		"dev": "bun run build --watch",
+		"inspector": "bunx @modelcontextprotocol/inspector build/mcp-server-drupal",
+		"lint": "biome check --write"
+	},
+	"dependencies": {
+		"@modelcontextprotocol/sdk": "0.6.0",
+		"@zodios/core": "^10.9.6"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "1.9.4",
+		"@types/bun": "^1.1.14",
+		"@types/node": "^20.11.24",
+		"typescript": "^5.3.3"
+	}
+}
