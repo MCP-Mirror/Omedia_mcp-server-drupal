@@ -9,11 +9,15 @@ import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import {
 	CallToolRequestSchema,
-	type CallToolResult,
+	ListResourceTemplatesRequestSchema,
+	ListResourcesRequestSchema,
 	ListToolsRequestSchema,
+	ReadResourceRequestSchema,
+	type Resource,
+	type ResourceTemplate,
 	type Tool,
 } from "@modelcontextprotocol/sdk/types.js";
-import { Zodios, type ZodiosInstance, isErrorFromAlias } from "@zodios/core";
+import { Zodios, type ZodiosInstance } from "@zodios/core";
 import { ApiDefinition } from "./types.js";
 
 const { values } = parseArgs({
@@ -44,6 +48,8 @@ class DrupalMcpServer {
 	private readonly server: Server;
 	private readonly api: ZodiosInstance<typeof ApiDefinition>;
 	private _tools: Array<Tool> = [];
+	private _resourceTemplates: Array<ResourceTemplate> = [];
+	private _resources: Array<Resource> = [];
 
 	constructor() {
 		this.server = new Server(
@@ -54,11 +60,46 @@ class DrupalMcpServer {
 			{
 				capabilities: {
 					tools: {},
+					resources: {},
 				},
 			},
 		);
 
 		this.api = new Zodios(DRUPAL_BASE_URL as string, ApiDefinition);
+	}
+
+	private setupResourceHandlers(): void {
+		if (this._resourceTemplates.length > 0) {
+			console.error(this._resourceTemplates);
+
+			this.server.setRequestHandler(
+				ListResourceTemplatesRequestSchema,
+				async () => ({
+					resourceTemplates: this._resourceTemplates,
+				}),
+			);
+		}
+		if (this._resources.length > 0) {
+			this.server.setRequestHandler(ListResourcesRequestSchema, async () => ({
+				resources: this._resources,
+			}));
+		}
+
+		this.server.setRequestHandler(
+			ReadResourceRequestSchema,
+			async (request) => {
+				const response = await this.api.post("/mcp/post", {
+					jsonrpc: "2.0",
+					id: 2,
+					method: "resources/read",
+					params: {
+						uri: request.params.uri,
+					},
+				});
+
+				return response.result;
+			},
+		);
 	}
 
 	private setupToolHandlers(): void {
@@ -67,47 +108,18 @@ class DrupalMcpServer {
 		}));
 
 		this.server.setRequestHandler(CallToolRequestSchema, async (request) => {
-			if (
-				this._tools.length === 0 ||
-				!this._tools.find((t) => t.name === request.params.name)
-			) {
-				return {
-					content: {
-						mimeType: "text/plain",
-						text: `Tool "${request.params.name}" not found`,
-					},
-					isError: true,
-				};
-			}
+			const response = await this.api.post("/mcp/post", {
+				jsonrpc: "2.0",
+				id: 2,
+				method: "tools/call",
+				params: {
+					name: request.params.name,
+					arguments: request.params.arguments,
+				},
+			});
+			console.error(response.result);
 
-			try {
-				const response = await this.api.executeTool(request.params.arguments, {
-					params: {
-						toolId: request.params.name,
-					},
-				});
-
-				return {
-					content: [
-						{
-							type: "text",
-							text: JSON.stringify(response, null, 2),
-						},
-					],
-				} satisfies CallToolResult;
-			} catch (error) {
-				if (isErrorFromAlias(ApiDefinition, "executeTool", error)) {
-					return {
-						content: {
-							mimeType: "text/plain",
-							text: `Drupal API error: ${error.message}`,
-						},
-						isError: true,
-					};
-				}
-
-				throw error;
-			}
+			return response.result;
 		});
 	}
 
@@ -124,26 +136,39 @@ class DrupalMcpServer {
 	}
 
 	async init() {
-		try {
-			const initInfo = await this.api.getInitializationInfo();
-			this._tools = initInfo.tools;
+		const [tools, resourceTemplates, resources] = await Promise.all([
+			this.api.post("/mcp/post", {
+				jsonrpc: "2.0",
+				id: 0,
+				method: "tools/list",
+			}),
+			this.api.post("/mcp/post", {
+				jsonrpc: "2.0",
+				id: 1,
+				method: "resources/templates/list",
+			}),
+			this.api.post("/mcp/post", {
+				jsonrpc: "2.0",
+				id: 2,
+				method: "resources/list",
+			}),
+		]);
 
-			if (this._tools.length > 0) {
-				this.setupToolHandlers();
-			}
+		this._tools = tools.result.tools;
+		this._resourceTemplates = resourceTemplates.result.resourceTemplates;
+		this._resources = resources.result.resources;
 
-			this.setupErrorHandling();
-
-			return this;
-		} catch (error) {
-			if (isErrorFromAlias(ApiDefinition, "getInitializationInfo", error)) {
-				console.error(`Drupal API error: ${error.message}`);
-
-				process.exit(1);
-			}
-
-			throw error;
+		if (this._tools.length > 0) {
+			this.setupToolHandlers();
 		}
+
+		if (this._resourceTemplates.length > 0 || this._resources.length > 0) {
+			this.setupResourceHandlers();
+		}
+
+		this.setupErrorHandling();
+
+		return this;
 	}
 
 	async run() {
