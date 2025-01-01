@@ -4,6 +4,7 @@
     "jsr:@std/assert@1": "1.0.10",
     "jsr:@std/cli@^1.0.9": "1.0.9",
     "jsr:@std/dotenv@~0.225.3": "0.225.3",
+    "jsr:@std/fmt@^1.0.3": "1.0.3",
     "jsr:@std/fs@^1.0.8": "1.0.8",
     "jsr:@std/internal@^1.0.5": "1.0.5",
     "jsr:@std/path@^1.0.8": "1.0.8",
@@ -22,6 +23,9 @@
     },
     "@std/dotenv@0.225.3": {
       "integrity": "a95e5b812c27b0854c52acbae215856d9cce9d4bbf774d938c51d212711e8d4a"
+    },
+    "@std/fmt@1.0.3": {
+      "integrity": "97765c16aa32245ff4e2204ecf7d8562496a3cb8592340a80e7e554e0bb9149f"
     },
     "@std/fs@1.0.8": {
       "integrity": "161c721b6f9400b8100a851b6f4061431c538b204bb76c501d02c508995cffe0",
@@ -106,6 +110,7 @@
       "jsr:@std/assert@1",
       "jsr:@std/cli@^1.0.9",
       "jsr:@std/dotenv@~0.225.3",
+      "jsr:@std/fmt@^1.0.3",
       "jsr:@std/fs@^1.0.8",
       "jsr:@std/path@^1.0.8",
       "npm:@modelcontextprotocol/sdk@^1.0.4",
