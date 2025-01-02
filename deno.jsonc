@@ -1,11 +1,11 @@
 {
   "version": "0.1.0",
   "tasks": {
-    "dev": "deno run -A --watch src/index.ts",
-    "dev:build": "deno run -A scripts/dev.ts",
+    "dev": "deno run -A scripts/dev.ts",
     "format": "deno fmt",
     "lint": "deno lint",
-    "build": "deno run --allow-read --allow-net --allow-env scripts/build.ts"
+    "build": "deno run --allow-read --allow-net --allow-env scripts/build.ts",
+    "inspector": "npx @modelcontextprotocol/inspector build/mcp-server-drupal"
   },
   "compilerOptions": {
     "strict": true,
