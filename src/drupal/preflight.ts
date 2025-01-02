@@ -1,6 +1,6 @@
 import {
-  ListResourceTemplatesRequestSchema,
   ListResourcesRequestSchema,
+  ListResourceTemplatesRequestSchema,
   ListToolsRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js";
 import { Formatter } from "../cli/format.ts";
@@ -27,8 +27,8 @@ async function preflight(client: DrupalProxy) {
     if (!available.length) {
       console.error(
         Formatter.error(
-          "No available instruments were found during the preflight check"
-        )
+          "No available instruments were found during the preflight check",
+        ),
       );
       Deno.exit(1);
     }

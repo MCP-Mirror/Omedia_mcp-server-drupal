@@ -12,7 +12,7 @@ const Server = new MCPServer(
       tools: {},
       resources: {},
     },
-  }
+  },
 );
 
 Server.onerror = (error) => {

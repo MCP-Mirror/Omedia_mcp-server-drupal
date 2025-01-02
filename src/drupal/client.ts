@@ -1,7 +1,7 @@
 import {
-  Tool,
   Resource,
   ResourceTemplate,
+  Tool,
 } from "@modelcontextprotocol/sdk/types.ts";
 import { Formatter } from "../cli/format.ts";
 import { composeMCPEndpoint } from "./helpers.ts";
@@ -35,7 +35,7 @@ function createDrupalProxy(base: string) {
     async resources(): Promise<Resource[]> {
       const data = await jrpc<"resources", Resource[]>(
         url,
-        MCPMethods.RESOURCES
+        MCPMethods.RESOURCES,
       );
 
       return data.result.resources;
@@ -43,7 +43,7 @@ function createDrupalProxy(base: string) {
     async templates(): Promise<ResourceTemplate[]> {
       const data = await jrpc<"resourceTemplates", ResourceTemplate[]>(
         url,
-        MCPMethods.TEMPLATES
+        MCPMethods.TEMPLATES,
       );
       return data.result.resourceTemplates;
     },
@@ -64,7 +64,7 @@ function createDrupalProxy(base: string) {
 function jrpc<K extends string, T>(
   url: string,
   method: MCPMethods,
-  params?: Record<string, unknown>
+  params?: Record<string, unknown>,
 ): Promise<JRPCResponse<K, T>> {
   const request = new Request(url, {
     method: "POST",
