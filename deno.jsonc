@@ -4,7 +4,7 @@
     "dev": "deno run -A scripts/dev.ts",
     "format": "deno fmt",
     "lint": "deno lint",
-    "build": "deno run --allow-read --allow-net --allow-env scripts/build.ts",
+    "build": "deno run --allow-read --allow-net --allow-env --allow-run scripts/build.ts",
     "inspector": "npx @modelcontextprotocol/inspector build/mcp-server-drupal"
   },
   "compilerOptions": {
