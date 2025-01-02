@@ -35,7 +35,9 @@ not required.
   - Replace `__BINARY_PATH__` with the path to the downloaded binary
   - Replace `__DRUPAL_BASE_URL__` with the base URL of your Drupal site
 
-  > [!IMPORTANT] > `--drupal-url` is a required argument
+  > [!IMPORTANT]
+  >
+  > `--drupal-url` is a required argument
 
 - To check the server and sdk version run the following command:
 
