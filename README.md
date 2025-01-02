@@ -8,6 +8,10 @@ server for the [Drupal MCP module](https://www.drupal.org/project/mcp) that
 works with the `STDIO` transport. In order to use `SSE` transport this server is
 not required.
 
+> [!IMPORTANT]
+> Both the Drupal module and this server are in active development. Use them at
+> your own risk.
+
 ## Installation and Usage
 
 - Download the binary for your system from the
