@@ -31,6 +31,10 @@ function setup() {
     console.error(DRUPAL_URL_REQUIRED);
     Deno.exit(1);
   }
+
+  Deno.addSignalListener("SIGINT", () => {
+    Deno.exit(0);
+  });
 }
 
 export { setup, flags };
