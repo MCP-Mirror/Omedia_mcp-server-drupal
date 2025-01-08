@@ -1,0 +1,57 @@
+name: Release
+
+env:
+  PACKAGE_NAME: "mcp-server-drupal"
+  TARGET_LIST: "x86_64-unknown-linux-gnu,aarch64-unknown-linux-gnu,x86_64-pc-windows-msvc,x86_64-apple-darwin,aarch64-apple-darwin"
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+permissions:
+  contents: write
+  id-token: write
+
+jobs:
+  build-and-sign:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Deno
+        uses: denoland/setup-deno@v2
+        with:
+          deno-version: "2.x"
+
+      - name: Extract version from tag
+        run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_ENV
+
+      - name: Setup cosign
+        uses: sigstore/cosign-installer@v3.7.0
+
+      - name: Build the binaries
+        run: |
+          for target in $(echo $TARGET_LIST | tr "," "\n")
+          do
+            binary_name=$(echo $target | sed "s/^deno-/$PACKAGE_NAME-/" | sed "s/-/_/g")
+            deno compile --target=$target --output=./build/$binary_name ./src/index.ts
+          done
+
+      - name: Sign binaries with Sigstore Keyless
+        run: |
+          for file in build/*
+          do
+            cosign sign-blob
+              \ --yes
+              \ build/$file
+              \ --bundle build/$file.sigstore
+          done
+
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            build/*
+          name: "MCP Server Drupal: ${{ env.VERSION }}"
