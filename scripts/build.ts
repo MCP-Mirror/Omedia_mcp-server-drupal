@@ -21,7 +21,7 @@ const ConfigSchema = z.object({
 if (import.meta.main) {
   try {
     const path = resolve(import.meta.dirname!, "..", "deno.jsonc");
-    const entry = resolve(import.meta.dirname!, "..", "src", "index.ts");
+    const entry = resolve(import.meta.dirname!, "..", "src", "mod.ts");
     const config = JSON.parse(Deno.readTextFileSync(path));
     const parsed = ConfigSchema.safeParse(config);
 

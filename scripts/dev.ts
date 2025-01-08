@@ -1,7 +1,7 @@
 import { resolve } from "@std/path";
 
 async function compile() {
-  const entry = resolve(import.meta.dirname!, "..", "src", "index.ts");
+  const entry = resolve(import.meta.dirname!, "..", "src", "mod.ts");
   const command = new Deno.Command(Deno.execPath(), {
     args: ["compile", "-A", "--output=build/mcp-server-drupal", entry],
     stdout: "inherit",
