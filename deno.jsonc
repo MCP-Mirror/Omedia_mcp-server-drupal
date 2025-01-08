@@ -6,7 +6,7 @@
     "lint": "deno lint",
     "build": "deno run --allow-read --allow-net --allow-env --allow-run scripts/build.ts",
     "inspector": "npx @modelcontextprotocol/inspector build/mcp-server-drupal",
-    "release": "deno run npm:release-it"
+    "release": "deno run -A npm:release-it"
   },
   "compilerOptions": {
     "strict": true,
@@ -23,7 +23,6 @@
     "@std/fmt": "jsr:@std/fmt@^1.0.3",
     "@std/fs": "jsr:@std/fs@^1.0.8",
     "@std/path": "jsr:@std/path@^1.0.8",
-    "release-it": "npm:release-it@^18.0.0",
     "zod": "npm:zod@^3.24.1"
   }
 }
