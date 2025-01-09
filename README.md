@@ -1,68 +1,108 @@
 # MCP Server for Drupal
 
-A Model Context Protocol server
+![image](https://github.com/user-attachments/assets/3fc18e9b-acd6-4490-8f43-504d812354dc)
 
-This is a TypeScript-based MCP server for Drupal.
+This is a typescript based companion
+[Model Context Protocol(MCP)](https://modelcontextprotocol.io/introduction)
+server for the [Drupal MCP module](https://www.drupal.org/project/mcp) that
+works with the `STDIO` transport. In order to use `SSE` transport this server is
+not required.
 
-## Features
+> [!IMPORTANT]
+> Both the Drupal module and this server are in active development. Use them at
+> your own risk.
 
-### Resources
+## Installation and Usage
 
-- All the resources defined by the Drupal API during the initialization phase
+- Download the binary for your system from the
+  [releases](https://github.com/Omedia/mcp-server-drupal/releases) page
 
-### Tools
+- To use it with [Claude Desktop](https://claude.ai/download) you need to add
+  the server config in the `claude_desktop_config.json` file. The file is
+  located at the following path:
 
-- All the tools defined by the Drupal API during the initialization phase
+  - On MacOS: `~/Library/Application Support/Claude/claude_desktop_config.json`
+  - On Windows: `%APPDATA%/Claude/claude_desktop_config.json`
 
-### Prompts
+  ```json
+  {
+    "mcpServers": {
+      "mcp-server-drupal": {
+        "command": "__BINARY_PATH__",
+        "args": ["--drupal-url", "__DRUPAL_BASE_URL__"],
+        "env": {}
+      }
+    }
+  }
+  ```
 
-- All the prompts defined by the Drupal API during the initialization phase
+  - Replace `__BINARY_PATH__` with the path to the downloaded binary
+  - Replace `__DRUPAL_BASE_URL__` with the base URL of your Drupal site
+
+  > [!IMPORTANT]
+  >
+  > `--drupal-url` is a required argument
+
+- To check the server and sdk version run the following command:
+
+```bash
+mcp-server-drupal --version
+```
+
+- To check the available commands run the following command:
+
+```bash
+mcp-server-drupal --help
+```
+
+## MCP
+
+- All instruments are defined by the Drupal API during the initialization phase
+
+> [!NOTE]
+> The server now exposes the following
+>
+> - Resources (templates, reads)
+> - Tools (calls)
+>
+> No prompts are exposed by the server for now
 
 ## Development
+
+This project is built with [Deno](https://deno.land/).
+
+> [!NOTE]
+> Use deno version `2.0.0` or above
 
 Install dependencies:
 
 ```bash
-bun install
-```
-
-Build the server:
-
-```bash
-bun run build
+deno install
 ```
 
 For development with auto-rebuild:
 
 ```bash
-bun run dev
+bun task dev
 ```
 
-## Installation
+Build the server:
 
-To use with Claude Desktop, add the server config:
-
-On MacOS: `~/Library/Application Support/Claude/claude_desktop_config.json`
-On Windows: `%APPDATA%/Claude/claude_desktop_config.json`
-
-```json
-{
-  "mcpServers": {
-    "mcp-server-drupal": {
-      "command": "__BINARY_PATH__",
-      "args": ["--drupalBaseUrl", "__DRUPAL_BASE_URL__"],
-      "env": {}
-    }
-  }
-}
+```bash
+deno task build --output build/mcp-server-drupal
 ```
+
+> [!TIP]
+> To build for the specific platform use the `--target` flag and check the
+> [docs](https://docs.deno.com/runtime/reference/cli/compile/#supported-targets)
 
 ### Debugging
 
-Since MCP servers communicate over stdio, debugging can be challenging. We recommend using the [MCP Inspector](https://github.com/modelcontextprotocol/inspector), which is available as a package script:
+Since MCP servers communicate over stdio, debugging can be challenging. We
+recommend using the
+[MCP Inspector](https://github.com/modelcontextprotocol/inspector), which is
+available as a deno task:
 
 ```bash
-bun run inspector
+deno task inspector --drupal-url [DRUPAL_BASE_URL]
 ```
-
-The Inspector will provide a URL to access debugging tools in your browser.
