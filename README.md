@@ -36,12 +36,9 @@ not required.
   }
   ```
 
+  - `--drupal-url` is a required argument
   - Replace `__BINARY_PATH__` with the path to the downloaded binary
   - Replace `__DRUPAL_BASE_URL__` with the base URL of your Drupal site
-
-  > [!IMPORTANT]
-  >
-  > `--drupal-url` is a required argument
 
 - To check the server and sdk version run the following command:
 
@@ -105,4 +102,16 @@ available as a deno task:
 
 ```bash
 deno task inspector --drupal-url [DRUPAL_BASE_URL]
+```
+
+## Verifying the binaries
+
+`drupal_mcp_server` binaries are signed by [cosign](https://github.com/sigstore/cosign) using identity-based signing. You can verify your binary by downloading the `signatures.tar.gz` file from the release page, extracting the signature and running the following command:
+
+```bash
+cosign verify-blob ${YOUR_BINARY_NAME} \
+--bundle signatures/${YOUR_BINARY_NAME}.bundle \
+--certificate-oidc-issuer https://token.actions.githubusercontent.com \
+--certificate-identity-regexp https://github.com/Omedia/mcp-server-drupal/.github/workflows/release.yml@refs/tags/v \
+--certificate-github-workflow-repository Omedia/mcp-server-drupal
 ```
